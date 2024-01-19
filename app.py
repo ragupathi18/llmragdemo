@@ -1,8 +1,10 @@
 import os
 import requests
 
-API_TOKEN = os.environ["API_TOKEN"] #Set a API_TOKEN environment variable before running
-API_URL = "" #Add a URL for a model of your choosing
+#API_TOKEN = "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"
+
+API_TOKEN=os.environ["API_TOKEN"] #Set a API_TOKEN environment variable before running
+API_URL = "https://api-inference.huggingface.co/models/openchat/openchat-3.5-0106"
 headers = {"Authorization": f"Bearer {API_TOKEN}"}
 
 def query(prompt):
@@ -17,10 +19,11 @@ def query(prompt):
         }
     }
     response = requests.post(API_URL, headers=headers, json=payload)
+    
     return response.json()[0]['generated_text']
 
-question = "What is the population of Jacksonville, Florida?"
-context = "As of the most current census, Jacksonville, Florida has a population of 1 million."
+question = "Who is the mayor of Jacksonville, Florida?"
+context = "Donna Deagon became the mayor of Jacksonville FL in 2023."
 prompt = f"""Use the following context to answer the question at the end.
 
 {context}
@@ -28,4 +31,5 @@ prompt = f"""Use the following context to answer the question at the end.
 Question: {question}
 """
 
+print(prompt)
 print(query(prompt))
