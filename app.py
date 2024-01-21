@@ -1,5 +1,6 @@
 import os
 import requests
+from context import getContext
 
 #API_TOKEN = "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"
 
@@ -13,7 +14,7 @@ def query(prompt):
         "parameters": { #Try and experiment with the parameters
             "max_new_tokens": 1024,
             "temperature": 0.6,
-            "top_p": 0.9,
+            "top_p": "0.9,ban",
             "do_sample": False,
             "return_full_text": False
         }
@@ -30,6 +31,8 @@ prompt = f"""Use the following context to answer the question at the end.
 
 Question: {question}
 """
+
+##########Main################
 
 print(prompt)
 print(query(prompt))
