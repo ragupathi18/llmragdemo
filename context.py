@@ -1,4 +1,6 @@
 
 def getContext():
-    context="Donna Deagon became the mayor of Jacksonville FL in 2023."
+    f=open("/workspaces/llmragdemo/context_help.txt",'r')
+    
+    context=f.read()
     return context

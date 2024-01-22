@@ -14,7 +14,7 @@ def query(prompt):
         "parameters": { #Try and experiment with the parameters
             "max_new_tokens": 1024,
             "temperature": 0.6,
-            "top_p": "0.9,ban",
+            "top_p": 0.9,
             "do_sample": False,
             "return_full_text": False
         }
@@ -23,16 +23,27 @@ def query(prompt):
     
     return response.json()[0]['generated_text']
 
-question = "Who is the mayor of Jacksonville, Florida?"
-context = "Donna Deagon became the mayor of Jacksonville FL in 2023."
-prompt = f"""Use the following context to answer the question at the end.
-
-{context}
-
-Question: {question}
-"""
+def getQuestion():
+    print("")
+    question=input("Enter your question (quit to stop): ")
+    return question
 
 ##########Main################
 
-print(prompt)
-print(query(prompt))
+context=getContext()
+while 1:
+    question=getQuestion()
+    if question.lower()=="quit":
+        break
+    #print(question)
+    #question = "Who is the mayor of Jacksonville, Florida?"
+    #context = "Donna Deagon became the mayor of Jacksonville FL in 2023."
+    prompt = f"""Use the following context to answer the question at the end.
+
+    {context}
+
+    Question: {question}
+    """
+    #print(prompt)
+    print("HF Model : ")
+    print(query(prompt))
