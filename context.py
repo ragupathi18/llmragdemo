@@ -1,6 +1,6 @@
 
 def getContext():
-    f=open("/workspaces/llmragdemo/context_help.txt",'r')
+    f=open("context_help.txt",'r')
     
     context=f.read()
     return context
