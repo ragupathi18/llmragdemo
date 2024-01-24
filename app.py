@@ -1,6 +1,7 @@
 import os
 import requests
 from context import getContext
+import chromadb
 
 #API_TOKEN = "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"
 
@@ -29,8 +30,21 @@ def getQuestion():
     return question
 
 ##########Main################
+chroma_client= chromadb.Client()
+try:
+    chroma_client.delete_collection("countries")
+except ValueError:
+    """Countries collection doesn't exist, create the collection next"""
+finally:
+    collection=chroma_client.create_collection(name="countries")
 
 context=getContext()
+
+collection.add(documents=[context],
+            metadatas=[{"type":"country"}],
+            ids=["amaze"]
+)
+
 while 1:
     question=getQuestion()
     if question.lower()=="quit":
