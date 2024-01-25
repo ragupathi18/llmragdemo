@@ -32,6 +32,7 @@ def getQuestion():
 ##########Main################
 chroma_client= chromadb.PersistentClient(path="./chromadb")
 
+#collection=chroma_client.delete_collection(name="countries")
 try:
     collection=chroma_client.create_collection(name="countries")
     print("Created Countries collection ")
@@ -44,7 +45,7 @@ except chromadb.db.base.UniqueConstraintError:
 
 context=getContext()
 
-collection.add(documents=[context],             metadatas=[{"type":"country"}],             ids=["amaze"])
+collection.upsert(documents=[context],             metadatas=[{"type":"country"}],             ids=["amaze"])
 
 con= collection.query(query_texts=["amaze"],
                     n_results=1)
