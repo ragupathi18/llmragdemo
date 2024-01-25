@@ -30,20 +30,27 @@ def getQuestion():
     return question
 
 ##########Main################
-chroma_client= chromadb.Client()
+chroma_client= chromadb.PersistentClient(path="./chromadb")
+
 try:
-    chroma_client.delete_collection("countries")
-except ValueError:
-    """Countries collection doesn't exist, create the collection next"""
-finally:
     collection=chroma_client.create_collection(name="countries")
+    print("Created Countries collection ")
+    #chroma_client.delete_collection("countries")
+except chromadb.db.base.UniqueConstraintError:
+    print("Countries collection already exists")
+    collection=chroma_client.get_collection(name="countries")
+
+
 
 context=getContext()
 
-collection.add(documents=[context],
-            metadatas=[{"type":"country"}],
-            ids=["amaze"]
-)
+collection.add(documents=[context],             metadatas=[{"type":"country"}],             ids=["amaze"])
+
+con= collection.query(query_texts=["amaze"],
+                    n_results=1)
+
+
+
 
 while 1:
     question=getQuestion()
