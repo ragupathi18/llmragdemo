@@ -7,6 +7,9 @@ import chromadb
 
 API_TOKEN=os.environ["API_TOKEN"] #Set a API_TOKEN environment variable before running
 API_URL = "https://api-inference.huggingface.co/models/openchat/openchat-3.5-0106"
+
+#API_URL = "https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta"
+
 headers = {"Authorization": f"Bearer {API_TOKEN}"}
 
 def query(prompt):
@@ -15,7 +18,7 @@ def query(prompt):
         "parameters": { #Try and experiment with the parameters
             "max_new_tokens": 1024,
             "temperature": 0.6,
-            "top_p": 0.9,
+            "top_p": 0.5,
             "do_sample": False,
             "return_full_text": False
         }
@@ -30,26 +33,18 @@ def getQuestion():
     return question
 
 ##########Main################
+getContext()
 chroma_client= chromadb.PersistentClient(path="./chromadb")
+collection=chroma_client.get_collection(name="countries")
+#print(collection.peek())
 
-#collection=chroma_client.delete_collection(name="countries")
-try:
-    collection=chroma_client.create_collection(name="countries")
-    print("Created Countries collection ")
-    #chroma_client.delete_collection("countries")
-except chromadb.db.base.UniqueConstraintError:
-    print("Countries collection already exists")
-    collection=chroma_client.get_collection(name="countries")
+from transformers import AutoTokenizer, AutoModelForTokenClassification
+ner_model_id = 'dslim/bert-base-NER'
+tokenizer = AutoTokenizer.from_pretrained(ner_model_id)
+ner_model = AutoModelForTokenClassification.from_pretrained(ner_model_id)
 
-
-
-context=getContext()
-
-collection.upsert(documents=[context],             metadatas=[{"type":"country"}],             ids=["amaze"])
-
-con= collection.query(query_texts=["amaze"],
-                    n_results=1)
-
+from transformers import pipeline
+ner_pipeline = pipeline("ner", model=ner_model, tokenizer=tokenizer)
 
 
 
@@ -60,7 +55,13 @@ while 1:
     #print(question)
     #question = "Who is the mayor of Jacksonville, Florida?"
     #context = "Donna Deagon became the mayor of Jacksonville FL in 2023."
-    prompt = f"""Use the following context to answer the question at the end.
+    #print(question)
+    #country=ner_pipeline(question)[0]["word"]
+
+    context=collection.query(query_texts=question,n_results=1)["documents"]
+    #print(context)
+
+    prompt = f"""Use the following context to answer the question at the end. Stop when you've answered the question. Do not generate any more than that.
 
     {context}
 
@@ -69,3 +70,9 @@ while 1:
     #print(prompt)
     print("HF Model : ")
     print(query(prompt))
+
+
+
+
+
+
